@@ -20,10 +20,14 @@ namespace switch_interface {
 Interface::Interface(rclcpp::Node *node) : node_{node} {
   node->declare_parameter("switch_prefix", "/switch/default");
   node->get_parameter("switch_prefix", interface_prefix_);
-  node->declare_parameter("switch_config", "");
-  node->get_parameter("switch_config", config_filename_);
   node->declare_parameter("switch_channels", 1);
   node->get_parameter("switch_channels", channels_num_);
+
+  // TODO(clairbee): consider initializing the channels ahead of time
+  // for (int i = 0; i < channels_num_.as_int(); i++) {
+  //   channels_.emplace(
+  //       std::make_shared<ChannelState>(node, interface_prefix_, i));
+  // }
 }
 
 Interface::ChannelState::ChannelState(rclcpp::Node *node,
@@ -39,7 +43,7 @@ Interface::ChannelState::ChannelState(rclcpp::Node *node,
 void Interface::switch_handler_(
     const std::shared_ptr<switch_interface::srv::Switch::Request> request,
     std::shared_ptr<switch_interface::srv::Switch::Response> response) {
-  if (request->channel >= channels_num_.as_int()) {
+  if (request->channel < 0 || request->channel >= channels_num_.as_int()) {
     response->exception_code = 1;
     return;
   }

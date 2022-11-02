@@ -32,7 +32,6 @@ class Interface {
   rclcpp::Node *node_;
 
   rclcpp::Parameter interface_prefix_;
-  rclcpp::Parameter config_filename_;
   rclcpp::Parameter channels_num_;
 
   virtual void switch_handler_real_(
