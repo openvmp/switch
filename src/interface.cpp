@@ -13,7 +13,6 @@
 
 #include "switch_interface/config.hpp"
 #include "switch_interface/srv/switch.hpp"
-#include "yaml-cpp/yaml.h"
 
 namespace switch_interface {
 
