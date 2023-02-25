@@ -10,14 +10,14 @@
 #ifndef OPENVMP_SWITCH_INTERFACE_REMOTE_H
 #define OPENVMP_SWITCH_INTERFACE_REMOTE_H
 
-#include <future>
 #include <memory>
 #include <string>
 
 #include "rclcpp/rclcpp.hpp"
 #include "switch_interface/interface.hpp"
+#include "switch_interface/srv/switch.hpp"
 
-namespace switch {
+namespace switch_interface {
 
   class RemoteInterface : public Interface {
    public:
@@ -25,8 +25,11 @@ namespace switch {
     virtual ~RemoteInterface() {}
 
     virtual void switch_cmd(uint16_t channel, bool on) override;
+    virtual void switch_single_cmd(bool on) override;
 
    private:
+    rclcpp::Parameter channel_num_;
+
     rclcpp::Client<switch_interface::srv::Switch>::SharedPtr clnt_switch;
   };
 

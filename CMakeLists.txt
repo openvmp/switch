@@ -31,6 +31,8 @@ include_directories(
 
 set(project_SOURCE_FILES
   src/interface.cpp
+  src/interface_remote.cpp
+  src/implementation.cpp
 )
 
 set(project_LIBRARIES

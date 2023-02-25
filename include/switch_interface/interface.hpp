@@ -14,6 +14,8 @@
 #include "std_msgs/msg/u_int16.hpp"
 #include "switch_interface/srv/switch.hpp"
 
+#define SWITCH_SERVICE_SWITCH "/switch"
+
 namespace switch_interface {
 
 class Interface {
@@ -21,11 +23,14 @@ class Interface {
   Interface(rclcpp::Node *node);
   virtual ~Interface() {}
 
+  virtual void switch_single_cmd(bool on) = 0;
   virtual void switch_cmd(uint16_t channel, bool on) = 0;
 
  protected:
   rclcpp::Node *node_;
+  rclcpp::CallbackGroup::SharedPtr callback_group_;
   rclcpp::Parameter interface_prefix_;
+
 };
 
 }  // namespace switch_interface

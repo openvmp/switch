@@ -48,11 +48,13 @@ class Implementation : public Interface {
  private:
   std::mutex channels_lock_;
 
+  rclcpp::Service<switch_interface::srv::Switch>::SharedPtr srv_switch;
+
+  virtual void switch_single_cmd(bool on) override;
   virtual void switch_cmd(uint16_t channel, bool on) override;
-  virtual void switch_handler_(
+  void switch_handler_(
       const std::shared_ptr<switch_interface::srv::Switch::Request> request,
-      std::shared_ptr<switch_interface::srv::Switch::Response> response)
-      override;
+      std::shared_ptr<switch_interface::srv::Switch::Response> response);
 };
 
 }  // namespace switch_interface
