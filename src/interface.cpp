@@ -42,7 +42,8 @@ Interface::ChannelState::ChannelState(rclcpp::Node *node,
 void Interface::switch_handler_(
     const std::shared_ptr<switch_interface::srv::Switch::Request> request,
     std::shared_ptr<switch_interface::srv::Switch::Response> response) {
-  if (/* |suppress the warning| request->channel < 0 ||*/ request->channel >= channels_num_.as_int()) {
+  if (/* |suppress the warning| request->channel < 0 ||*/ request->channel >=
+      channels_num_.as_int()) {
     response->exception_code = 1;
     return;
   }
