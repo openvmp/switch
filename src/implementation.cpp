@@ -23,12 +23,12 @@ Implementation::Implementation(rclcpp::Node *node) : Interface(node) {
   // TODO(clairbee): consider initializing the channels ahead of time
   // for (int i = 0; i < channels_num_.as_int(); i++) {
   //   channels_.emplace(
-  //       std::make_shared<ChannelState>(node, interface_prefix_, i));
+  //       std::make_shared<ChannelState>(node, get_prefix_(), i));
   // }
 
   srv_switch =
       node_->create_service<switch_interface::srv::Switch>(
-          interface_prefix_.as_string() + SWITCH_SERVICE_SWITCH,
+          get_prefix_() + SWITCH_SERVICE_SWITCH,
           std::bind(&Implementation::switch_handler_, this,
                     std::placeholders::_1, std::placeholders::_2),
           ::rmw_qos_profile_default, callback_group_);
@@ -77,7 +77,7 @@ void Implementation::switch_handler_(
   std_msgs::msg::Bool msg_on;
   msg_on.data = request->on;
 
-  auto prefix = interface_prefix_.as_string();
+  auto prefix = get_prefix_();
   channels_lock_.lock();
   if (channels_.find(request->channel) == channels_.end()) {
     channels_.emplace(

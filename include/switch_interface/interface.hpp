@@ -29,8 +29,11 @@ class Interface {
  protected:
   rclcpp::Node *node_;
   rclcpp::CallbackGroup::SharedPtr callback_group_;
-  rclcpp::Parameter interface_prefix_;
+  
+  std::string get_prefix_();
 
+ private:
+  rclcpp::Parameter interface_prefix_;
 };
 
 }  // namespace switch_interface

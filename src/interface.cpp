@@ -20,8 +20,17 @@ Interface::Interface(rclcpp::Node *node) : node_{node} {
   callback_group_ =
       node->create_callback_group(rclcpp::CallbackGroupType::Reentrant);
 
-  node->declare_parameter("switch_prefix", "/switch/default");
+  node->declare_parameter("switch_prefix", "/switch/" + std::string(node_->get_name()));
   node->get_parameter("switch_prefix", interface_prefix_);
+}
+
+std::string Interface::get_prefix_() {
+  std::string prefix = std::string(node_->get_namespace());
+  if (prefix.length() >0 && prefix[prefix.length()-1] == '/') {
+    prefix = prefix.substr(0, prefix.length() - 1);
+  }
+  prefix += interface_prefix_.as_string();
+  return prefix;
 }
 
 }  // namespace switch_interface

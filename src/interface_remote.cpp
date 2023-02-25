@@ -21,7 +21,7 @@ RemoteInterface::RemoteInterface(rclcpp::Node *node) : Interface(node) {
 
   clnt_switch =
       node->create_client<switch_interface::srv::Switch>(
-          interface_prefix_.as_string() + SWITCH_SERVICE_SWITCH,
+          get_prefix_() + SWITCH_SERVICE_SWITCH,
           ::rmw_qos_profile_default, callback_group_);
 }
 
