@@ -26,22 +26,24 @@ Implementation::Implementation(rclcpp::Node *node) : Interface(node) {
   //       std::make_shared<ChannelState>(node, get_prefix_(), i));
   // }
 
-  srv_switch =
-      node_->create_service<switch_interface::srv::Switch>(
-          get_prefix_() + SWITCH_SERVICE_SWITCH,
-          std::bind(&Implementation::switch_handler_, this,
-                    std::placeholders::_1, std::placeholders::_2),
-          ::rmw_qos_profile_default, callback_group_);
+  srv_switch = node_->create_service<switch_interface::srv::Switch>(
+      get_prefix_() + SWITCH_SERVICE_SWITCH,
+      std::bind(&Implementation::switch_handler_, this, std::placeholders::_1,
+                std::placeholders::_2),
+      ::rmw_qos_profile_default, callback_group_);
 }
 
 Implementation::ChannelState::ChannelState(rclcpp::Node *node,
-                                      const std::string &interface_prefix,
-                                      int channel) {
+                                           const std::string &interface_prefix,
+                                           int channel) {
   last_changed = node->create_publisher<std_msgs::msg::UInt64>(
       interface_prefix + "/channel" + std::to_string(channel) + "/last_changed",
-      10);
+      rmw_qos_reliability_policy_t::RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT |
+          rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST);
   last_on = node->create_publisher<std_msgs::msg::Bool>(
-      interface_prefix + "/channel" + std::to_string(channel) + "/last_on", 10);
+      interface_prefix + "/channel" + std::to_string(channel) + "/last_on",
+      rmw_qos_reliability_policy_t::RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT |
+          rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST);
 }
 
 void Implementation::switch_single_cmd(bool on) {
@@ -80,10 +82,8 @@ void Implementation::switch_handler_(
   auto prefix = get_prefix_();
   channels_lock_.lock();
   if (channels_.find(request->channel) == channels_.end()) {
-    channels_.emplace(
-        request->channel,
-        std::make_shared<ChannelState>(node_, prefix,
-                                       request->channel));
+    channels_.emplace(request->channel, std::make_shared<ChannelState>(
+                                            node_, prefix, request->channel));
   }
   channels_[request->channel]->last_changed->publish(msg_now);
   channels_[request->channel]->last_on->publish(msg_on);
