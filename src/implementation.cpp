@@ -11,6 +11,7 @@
 
 #include <functional>
 
+#include "rclcpp/qos.hpp"
 #include "switch_interface/config.hpp"
 #include "switch_interface/srv/switch.hpp"
 
@@ -36,14 +37,26 @@ Implementation::Implementation(rclcpp::Node *node) : Interface(node) {
 Implementation::ChannelState::ChannelState(rclcpp::Node *node,
                                            const std::string &interface_prefix,
                                            int channel) {
+  rmw_qos_profile_t rmw = {
+      .history = rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST,
+      .depth = 1,
+      .reliability =
+          rmw_qos_reliability_policy_t::RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
+      .durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL,
+      .deadline = {0, 50000000},
+      .lifespan = {0, 50000000},
+      .liveliness = RMW_QOS_POLICY_LIVELINESS_AUTOMATIC,
+      .liveliness_lease_duration = {0, 0},
+      .avoid_ros_namespace_conventions = false,
+  };
+  auto qos = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw), rmw);
+
   last_changed = node->create_publisher<std_msgs::msg::UInt64>(
       interface_prefix + "/channel" + std::to_string(channel) + "/last_changed",
-      rmw_qos_reliability_policy_t::RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT |
-          rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST);
+      qos);
   last_on = node->create_publisher<std_msgs::msg::Bool>(
       interface_prefix + "/channel" + std::to_string(channel) + "/last_on",
-      rmw_qos_reliability_policy_t::RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT |
-          rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST);
+      qos);
 }
 
 void Implementation::switch_single_cmd(bool on) {
