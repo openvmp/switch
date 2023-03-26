@@ -12,6 +12,6 @@
 
 #define SWITCH_CONFIG_TOP "switch"
 
-namespace switch_interface {}
+namespace remote_switch {}
 
 #endif  // OPENVMP_SWITCH_CONFIG_H

@@ -15,14 +15,14 @@
 #include <string>
 
 #include "rclcpp/rclcpp.hpp"
+#include "remote_switch/interface.hpp"
+#include "remote_switch/srv/switch.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "std_msgs/msg/u_int16.hpp"
 #include "std_msgs/msg/u_int64.hpp"
 #include "std_msgs/msg/u_int8.hpp"
-#include "switch_interface/interface.hpp"
-#include "switch_interface/srv/switch.hpp"
 
-namespace switch_interface {
+namespace remote_switch {
 
 class Implementation : public Interface {
  public:
@@ -33,8 +33,8 @@ class Implementation : public Interface {
   rclcpp::Parameter channels_num_;
 
   virtual void switch_handler_real_(
-      const std::shared_ptr<switch_interface::srv::Switch::Request> request,
-      std::shared_ptr<switch_interface::srv::Switch::Response> response) = 0;
+      const std::shared_ptr<srv::Switch::Request> request,
+      std::shared_ptr<srv::Switch::Response> response) = 0;
 
   class ChannelState {
    public:
@@ -48,15 +48,14 @@ class Implementation : public Interface {
  private:
   std::mutex channels_lock_;
 
-  rclcpp::Service<switch_interface::srv::Switch>::SharedPtr srv_switch;
+  rclcpp::Service<srv::Switch>::SharedPtr srv_switch;
 
   virtual void switch_single_cmd(bool on) override;
   virtual void switch_cmd(uint16_t channel, bool on) override;
-  void switch_handler_(
-      const std::shared_ptr<switch_interface::srv::Switch::Request> request,
-      std::shared_ptr<switch_interface::srv::Switch::Response> response);
+  void switch_handler_(const std::shared_ptr<srv::Switch::Request> request,
+                       std::shared_ptr<srv::Switch::Response> response);
 };
 
-}  // namespace switch_interface
+}  // namespace remote_switch
 
 #endif  // OPENVMP_SWITCH_IMPLEMENTATION_H

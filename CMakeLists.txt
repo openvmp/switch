@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(switch_interface)
+project(remote_switch)
 
 # Compiler settings
 if(NOT CMAKE_CXX_STANDARD)

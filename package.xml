@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>switch_interface</name> <!-- TODO(clairbee): rename this to "relay_board" or "relay" -->
+  <name>remote_switch</name> <!-- TODO(clairbee): rename this to "relay_board" or "relay" -->
   <version>0.0.1</version>
   <description>Generic interface for multi-channel relay boards</description>
   <maintainer email="openvmp@proton.me">Roman Kuzmenko</maintainer>

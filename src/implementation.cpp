@@ -7,15 +7,15 @@
  * Licensed under Apache License, Version 2.0.
  */
 
-#include "switch_interface/implementation.hpp"
+#include "remote_switch/implementation.hpp"
 
 #include <functional>
 
 #include "rclcpp/qos.hpp"
-#include "switch_interface/config.hpp"
-#include "switch_interface/srv/switch.hpp"
+#include "remote_switch/config.hpp"
+#include "remote_switch/srv/switch.hpp"
 
-namespace switch_interface {
+namespace remote_switch {
 
 Implementation::Implementation(rclcpp::Node *node) : Interface(node) {
   node->declare_parameter("switch_channels", 1);
@@ -27,7 +27,7 @@ Implementation::Implementation(rclcpp::Node *node) : Interface(node) {
   //       std::make_shared<ChannelState>(node, get_prefix_(), i));
   // }
 
-  srv_switch = node_->create_service<switch_interface::srv::Switch>(
+  srv_switch = node_->create_service<srv::Switch>(
       get_prefix_() + SWITCH_SERVICE_SWITCH,
       std::bind(&Implementation::switch_handler_, this, std::placeholders::_1,
                 std::placeholders::_2),
@@ -66,8 +66,8 @@ void Implementation::switch_single_cmd(bool on) {
 }
 
 void Implementation::switch_cmd(uint16_t channel, bool on) {
-  std::shared_ptr<switch_interface::srv::Switch::Request> request;
-  std::shared_ptr<switch_interface::srv::Switch::Response> response;
+  std::shared_ptr<srv::Switch::Request> request;
+  std::shared_ptr<srv::Switch::Response> response;
   request->channel = channel;
   request->on = on;
 
@@ -75,8 +75,8 @@ void Implementation::switch_cmd(uint16_t channel, bool on) {
 }
 
 void Implementation::switch_handler_(
-    const std::shared_ptr<switch_interface::srv::Switch::Request> request,
-    std::shared_ptr<switch_interface::srv::Switch::Response> response) {
+    const std::shared_ptr<srv::Switch::Request> request,
+    std::shared_ptr<srv::Switch::Response> response) {
   if (/* |suppress the warning| request->channel < 0 ||*/ request->channel >=
       channels_num_.as_int()) {
     response->exception_code = 1;
@@ -103,4 +103,4 @@ void Implementation::switch_handler_(
   channels_lock_.unlock();
 }
 
-}  // namespace switch_interface
+}  // namespace remote_switch

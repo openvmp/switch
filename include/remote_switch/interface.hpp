@@ -11,12 +11,12 @@
 #define OPENVMP_SWITCH_INTERFACE_H
 
 #include "rclcpp/rclcpp.hpp"
+#include "remote_switch/srv/switch.hpp"
 #include "std_msgs/msg/u_int16.hpp"
-#include "switch_interface/srv/switch.hpp"
 
 #define SWITCH_SERVICE_SWITCH "/switch"
 
-namespace switch_interface {
+namespace remote_switch {
 
 class Interface {
  public:
@@ -29,13 +29,13 @@ class Interface {
  protected:
   rclcpp::Node *node_;
   rclcpp::CallbackGroup::SharedPtr callback_group_;
-  
+
   std::string get_prefix_();
 
  private:
   rclcpp::Parameter interface_prefix_;
 };
 
-}  // namespace switch_interface
+}  // namespace remote_switch
 
 #endif  // OPENVMP_SWITCH_INTERFACE_H
