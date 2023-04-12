@@ -21,14 +21,13 @@ Implementation::Implementation(rclcpp::Node *node) : Interface(node) {
   node->declare_parameter("switch_channels", 1);
   node->get_parameter("switch_channels", channels_num_);
 
-  // TODO(clairbee): consider initializing the channels ahead of time
-  // for (int i = 0; i < channels_num_.as_int(); i++) {
-  //   channels_.emplace(
-  //       std::make_shared<ChannelState>(node, get_prefix_(), i));
-  // }
+  auto prefix = get_prefix_();
+  for (int i = 0; i < channels_num_.as_int(); i++) {
+    channels_.emplace(i, std::make_shared<ChannelState>(node, prefix, i));
+  }
 
   srv_switch = node_->create_service<srv::Switch>(
-      get_prefix_() + SWITCH_SERVICE_SWITCH,
+      prefix + SWITCH_SERVICE_SWITCH,
       std::bind(&Implementation::switch_handler_, this, std::placeholders::_1,
                 std::placeholders::_2),
       ::rmw_qos_profile_default, callback_group_);
@@ -92,15 +91,16 @@ void Implementation::switch_handler_(
   std_msgs::msg::Bool msg_on;
   msg_on.data = request->on;
 
-  auto prefix = get_prefix_();
-  channels_lock_.lock();
-  if (channels_.find(request->channel) == channels_.end()) {
-    channels_.emplace(request->channel, std::make_shared<ChannelState>(
-                                            node_, prefix, request->channel));
-  }
+  // TODO(clairbee): fix auto-initialization
+  //auto prefix = get_prefix_();
+  //channels_lock_.lock();
+  //if (channels_.find(request->channel) == channels_.end()) {
+    //channels_.emplace(request->channel, std::make_shared<ChannelState>(
+                                            //node_, prefix, request->channel));
+  //}
+  //channels_lock_.unlock();
   channels_[request->channel]->last_changed->publish(msg_now);
   channels_[request->channel]->last_on->publish(msg_on);
-  channels_lock_.unlock();
 }
 
 }  // namespace remote_switch

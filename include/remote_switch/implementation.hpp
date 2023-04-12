@@ -32,6 +32,7 @@ class Implementation : public Interface {
  protected:
   rclcpp::Parameter channels_num_;
 
+  // TODO(clairbee): avoid composite types here
   virtual void switch_handler_real_(
       const std::shared_ptr<srv::Switch::Request> request,
       std::shared_ptr<srv::Switch::Response> response) = 0;
