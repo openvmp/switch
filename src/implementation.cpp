@@ -36,26 +36,11 @@ Implementation::Implementation(rclcpp::Node *node) : Interface(node) {
 Implementation::ChannelState::ChannelState(rclcpp::Node *node,
                                            const std::string &interface_prefix,
                                            int channel) {
-  rmw_qos_profile_t rmw = {
-      .history = rmw_qos_history_policy_t::RMW_QOS_POLICY_HISTORY_KEEP_LAST,
-      .depth = 1,
-      .reliability =
-          rmw_qos_reliability_policy_t::RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,
-      .durability = RMW_QOS_POLICY_DURABILITY_VOLATILE,
-      .deadline = {0, 50000000},
-      .lifespan = {0, 50000000},
-      .liveliness = RMW_QOS_POLICY_LIVELINESS_AUTOMATIC,
-      .liveliness_lease_duration = {0, 0},
-      .avoid_ros_namespace_conventions = false,
-  };
-  auto qos = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw), rmw);
-
   last_changed = node->create_publisher<std_msgs::msg::UInt64>(
       interface_prefix + "/channel" + std::to_string(channel) + "/last_changed",
-      qos);
+      10);
   last_on = node->create_publisher<std_msgs::msg::Bool>(
-      interface_prefix + "/channel" + std::to_string(channel) + "/last_on",
-      qos);
+      interface_prefix + "/channel" + std::to_string(channel) + "/last_on", 10);
 }
 
 void Implementation::switch_single_cmd(bool on) {
@@ -92,13 +77,13 @@ void Implementation::switch_handler_(
   msg_on.data = request->on;
 
   // TODO(clairbee): fix auto-initialization
-  //auto prefix = get_prefix_();
-  //channels_lock_.lock();
-  //if (channels_.find(request->channel) == channels_.end()) {
-    //channels_.emplace(request->channel, std::make_shared<ChannelState>(
-                                            //node_, prefix, request->channel));
+  // auto prefix = get_prefix_();
+  // channels_lock_.lock();
+  // if (channels_.find(request->channel) == channels_.end()) {
+  // channels_.emplace(request->channel, std::make_shared<ChannelState>(
+  // node_, prefix, request->channel));
   //}
-  //channels_lock_.unlock();
+  // channels_lock_.unlock();
   channels_[request->channel]->last_changed->publish(msg_now);
   channels_[request->channel]->last_on->publish(msg_on);
 }
